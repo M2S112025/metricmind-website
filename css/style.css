@@ -517,7 +517,7 @@ textarea { min-height: 150px; resize: vertical; }
 @media (max-width: 640px) {
   .topbar { gap: 10px; }
   .logo-wrap { min-width: 0; }
-  .logo-wrap img { max-width: 120px; }
+  .logo-wrap img { max-width: 760px; }
   .header-actions { gap: 6px; }
   .header-actions .btn { padding: 9px 10px; font-size: 0.78rem; }
   .mobile-toggle { padding: 6px; }
