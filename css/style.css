@@ -121,11 +121,16 @@ input[type="submit"] {
   border: 1px solid rgba(1,48,92,0.15);
 }
 .btn-download {
-  background: transparent;
+  background: var(--navy);
   color: var(--white);
-  border: 1px solid rgba(255,255,255,0.45);
+  border: 1px solid var(--navy);
   padding: 12px 16px;
   white-space: nowrap;
+  box-shadow: 0 8px 18px rgba(1,48,92,0.18);
+}
+.btn-download:hover {
+  background: var(--blue);
+  border-color: var(--blue);
 }
 .mobile-toggle {
   display: none;
@@ -493,8 +498,7 @@ textarea { min-height: 150px; resize: vertical; }
   .mobile-toggle { display: block; }
   .header-actions { margin-left: auto; }
   .btn-download {
-    color: var(--navy);
-    border-color: rgba(1,48,92,0.2);
+    color: var(--white);
   }
   .page-hero-inner, .two-column, .footer-grid, .card-grid, .steps, .product-grid, .form-grid {
     grid-template-columns: 1fr;
