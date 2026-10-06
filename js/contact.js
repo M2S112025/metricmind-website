@@ -1,8 +1,27 @@
-document.addEventListener('DOMContentLoaded', () => {
+﻿document.addEventListener('DOMContentLoaded', () => {
   const form = document.querySelector('#contact-form');
   const notice = document.querySelector('.notice');
 
   if (!form) return;
+
+  const supportEmail = 'support@metricmind.in';
+
+  const shareViaEmail = (values) => {
+    const lines = [
+      `Name: ${values.name || ''}`,
+      `Company: ${values.company || ''}`,
+      `Email: ${values.email || ''}`,
+      `Phone: ${values.phone || ''}`,
+      `Solution Interested In: ${values.solution_interest || ''}`,
+      `Message: ${values.message || ''}`
+    ];
+
+    const subject = `Demo request from ${values.name || 'Website visitor'}`;
+    const body = lines.join('\n');
+    const mailtoUrl = `mailto:${supportEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+    window.location.href = mailtoUrl;
+  };
 
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -19,6 +38,8 @@ document.addEventListener('DOMContentLoaded', () => {
       source: 'website-demo-form',
       created_at: new Date().toISOString()
     };
+
+    shareViaEmail(values);
 
     try {
       const config = window.__METRICMIND_SUPABASE__ || {};
