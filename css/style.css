@@ -374,18 +374,34 @@ section { padding: 84px 0; }
 
 .workflow {
   display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 8px;
   margin-top: 24px;
+  overflow-x: auto;
+  padding: 4px 2px 10px;
 }
 .workflow span {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
   background: var(--navy);
   color: var(--white);
-  padding: 10px 16px;
+  min-height: 46px;
+  padding: 10px 13px;
   border-radius: 999px;
   font-weight: 700;
+  white-space: nowrap;
 }
-.workflow .arrow { background: transparent; color: var(--teal); padding: 0; }
+.workflow .arrow {
+  background: transparent;
+  color: var(--teal);
+  min-height: 0;
+  padding: 0;
+  font-size: 1.15rem;
+  line-height: 1;
+}
 
 .cta-wrap {
   background: linear-gradient(135deg, rgba(63,178,196,0.12), rgba(33,125,175,0.09));
