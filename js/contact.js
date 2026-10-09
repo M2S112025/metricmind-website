@@ -1,73 +1,69 @@
-﻿document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
   const form = document.querySelector('#contact-form');
   const notice = document.querySelector('.notice');
 
   if (!form) return;
 
-  const supportEmail = 'support@metricmind.in';
-
-  const shareViaEmail = (values) => {
-    const lines = [
-      `Name: ${values.name || ''}`,
-      `Company: ${values.company || ''}`,
-      `Email: ${values.email || ''}`,
-      `Phone: ${values.phone || ''}`,
-      `Solution Interested In: ${values.solution_interest || ''}`,
-      `Message: ${values.message || ''}`
-    ];
-
-    const subject = `Demo request from ${values.name || 'Website visitor'}`;
-    const body = lines.join('\n');
-    const mailtoUrl = `mailto:${supportEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-
-    window.location.href = mailtoUrl;
-  };
+  const submitButton = form.querySelector('button[type="submit"]');
 
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
     const formData = new FormData(form);
     const values = Object.fromEntries(formData.entries());
+    const config = window.__METRICMIND_SUPABASE__;
 
-    if (notice) {
-      notice.textContent = 'Thank you. Your demo request has been captured.';
-      notice.classList.add('visible');
+    if (!config?.url || !config?.anonKey) {
+      if (notice) {
+        notice.textContent = 'The enquiry form is not configured. Please contact support@metricmind.in.';
+        notice.classList.add('visible', 'error');
+      }
+      return;
     }
 
     const payload = {
-      ...values,
-      source: 'website-demo-form',
-      created_at: new Date().toISOString()
+      name: values.name,
+      company: values.company,
+      email: values.email,
+      phone: values.phone,
+      solution_interest: values.solution_interest,
+      message: values.message,
+      source: 'website-demo-form'
     };
 
-    shareViaEmail(values);
+    if (notice) {
+      notice.classList.remove('error');
+      notice.textContent = 'Sending your request...';
+      notice.classList.add('visible');
+    }
+    if (submitButton) submitButton.disabled = true;
 
     try {
-      const config = window.__METRICMIND_SUPABASE__ || {};
-      if (config.url && config.anonKey) {
-        const response = await fetch(`${config.url}/rest/v1/contact_leads`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'apikey': config.anonKey,
-            'Authorization': `Bearer ${config.anonKey}`
-          },
-          body: JSON.stringify(payload)
-        });
+      const response = await fetch(`${config.url}/rest/v1/contact_leads`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          apikey: config.anonKey,
+          Authorization: `Bearer ${config.anonKey}`,
+          Prefer: 'return=minimal'
+        },
+        body: JSON.stringify(payload)
+      });
 
-        if (!response.ok) {
-          throw new Error('Supabase request failed');
-        }
-      } else {
-        localStorage.setItem('metricmind-lead', JSON.stringify(payload));
+      if (!response.ok) {
+        const errorDetails = await response.text();
+        throw new Error(`Supabase returned ${response.status}: ${errorDetails}`);
       }
 
+      if (notice) notice.textContent = 'Thank you. Your demo request has been submitted.';
       form.reset();
     } catch (error) {
       if (notice) {
-        notice.textContent = 'Your request was saved locally while the lead pipeline is being connected.';
-        notice.classList.add('visible');
+        notice.textContent = 'We could not submit your request right now. Please try again or contact support@metricmind.in.';
+        notice.classList.add('visible', 'error');
       }
-      localStorage.setItem('metricmind-lead', JSON.stringify(payload));
+      console.error('Failed to submit contact lead to Supabase:', error);
+    } finally {
+      if (submitButton) submitButton.disabled = false;
     }
   });
 });
